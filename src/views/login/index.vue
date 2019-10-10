@@ -4,10 +4,10 @@
     <div class="login-warp">
       <!-- logo 区域 -->
       <div class="logo">
-        <img src="./logo_index.png" alt />
+        <img src="./img/logo_index.png" alt />
       </div>
       <!-- el-form: 管理所有表单元素的父容器  ref: vue 中提供的操作 dom 的方式 model: 表单元素的数据源 label-width： 描述文本的宽度 -->
-      <el-form ref="form" :model="form" :rules="rules">
+      <el-form ref="form" :model="form" :rules="rules" class="form">
         <!-- el-form-item：表单域 label: 当前选项的描述文字 -->
         <el-form-item prop="mobile">
           <el-input v-model="form.mobile" placeholder="请输入手机号"></el-input>
@@ -18,8 +18,12 @@
             <el-col :span="12">
               <el-input v-model="form.code" placeholder="请输入验证码"></el-input>
             </el-col>
-            <el-col :span="9" :offset="3">
-              <el-button class="code-btn" :disabled="!!timer" @click="getCode">{{timer?`${formatTime}秒后获取`:'获取验证码'}}</el-button>
+            <el-col :span="10" :offset="2">
+              <el-button
+                class="code-btn"
+                :disabled="!!timer"
+                @click="getCode"
+              >{{timer?`${formatTime}秒后获取`:'获取验证码'}}</el-button>
             </el-col>
           </el-row>
         </el-form-item>
@@ -41,7 +45,7 @@
 
 <script>
 // 导入axios
-import axios from 'axios'
+import { postLogin } from '@/api/'
 export default {
   data () {
     return {
@@ -94,13 +98,10 @@ export default {
       // 将加载状态设置为 true
       this.loginloading = true
       // 发送请求到服务器
-      axios({
-        url: 'http://ttapi.research.itcast.cn/mp/v1_0/authorizations',
-        method: 'POST',
-        data: this.form
-      }).then(res => {
+      postLogin(this.form).then(res => {
         // res 中有一个属性叫做 data, 在 data 中有两个属性后面我们会用上： token , refresh_token
         // 只要进入到这个方法中说明登录成功
+        console.log(res)
         this.$message({
           message: '登录成功',
           type: 'success'
@@ -109,8 +110,7 @@ export default {
         this.loginloading = false
         // 跳转到主页
         this.$router.push('/')
-      }).catch(err => {
-        console.log(err)
+      }).catch(() => {
         this.$message.error('手机号或者验证码错误')
       })
     },
@@ -152,11 +152,13 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-image: url("./login_bg.jpg");
+  background-image: url("./img/login_bg.jpg");
   .login-warp {
     background-color: #fff;
     padding: 30px;
     min-width: 300px;
+    box-sizing: border-box;
+    width: 400px;
     .logo {
       text-align: center;
       img {
@@ -164,21 +166,24 @@ export default {
         margin-bottom: 20px;
       }
     }
-    .login-btn {
-      width: 100%;
-    }
-    .code-btn {
-      width: 100%;
-    }
-    .read {
+    .form {
+      box-sizing: border-box;
+      .login-btn {
+        width: 100%;
+      }
+      .code-btn {
+        width: 100%;
+      }
+      .read {
         color: #999;
         span {
-            font-size: 14px;
+          font-size: 14px;
         }
         a {
-            color:#3296fa;
-            font-size: 14px;
+          color: #3296fa;
+          font-size: 14px;
         }
+      }
     }
   }
 }

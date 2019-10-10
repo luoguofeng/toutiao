@@ -1,29 +1,5 @@
-# hmtt
+# 黑马头条
 
-## Project setup
-```
-npm install
-```
+## 项目的登录页面
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
-
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Run your tests
-```
-npm run test
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+1. 使用element-ui的form表单组件来完成登录页面
