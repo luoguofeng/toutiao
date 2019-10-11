@@ -44,8 +44,6 @@
 </template>
 
 <script>
-// 导入axios
-import { postLogin } from '@/api/'
 export default {
   data () {
     return {
@@ -94,26 +92,23 @@ export default {
       })
     },
     // 数据的提交
-    submitData () {
+    async submitData () {
       // 将加载状态设置为 true
       this.loginloading = true
       // 发送请求到服务器
-      postLogin(this.form).then(res => {
-        // res 中有一个属性叫做 data, 在 data 中有两个属性后面我们会用上： token , refresh_token
-        // 只要进入到这个方法中说明登录成功
-        console.log(res)
-        localStorage.setItem('userInfo', JSON.stringify(res.data.data))
-        this.$message({
-          message: '登录成功',
-          type: 'success'
-        })
-        // 将加载状态改为 false
-        this.loginloading = false
-        // 跳转到主页
-        this.$router.push('/')
-      }).catch(() => {
-        this.$message.error('手机号或者验证码错误')
+      let res = await this.$Http.postLogin(this.form)
+      // res 中有一个属性叫做 data, 在 data 中有两个属性后面我们会用上： token , refresh_token
+      // 只要进入到这个方法中说明登录成功
+      console.log(res)
+      localStorage.setItem('userInfo', JSON.stringify(res))
+      this.$message({
+        message: '登录成功',
+        type: 'success'
       })
+      // 将加载状态改为 false
+      this.loginloading = false
+      // 跳转到主页
+      this.$router.push('/')
     },
     // 验证手机号码是否存在
     getCode () {

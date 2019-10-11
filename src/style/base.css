@@ -12,3 +12,12 @@ html,body,ul,li,a,span,div,h1,h2,h3,h4,h5,h6,b,i,u,p{
     /* 去掉a标签的下划线 */
     text-decoration: none;
 }
+
+.clearfix:before,
+.clearfix:after {
+  display: table;
+  content: "";
+}
+.clearfix:after {
+  clear: both
+}

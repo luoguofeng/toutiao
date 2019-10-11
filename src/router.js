@@ -7,6 +7,7 @@ NProgress.configure({ ease: 'ease', speed: 800 }) // ease：调整动画设置�
 Vue.use(Router)
 
 let router = new Router({
+  mode: 'history',
   routes: [
     {
       path: '/',
@@ -27,10 +28,16 @@ let router = new Router({
         // 主页路由
         { path: '/home', component: () => import('@/views/home') },
         // 发布文章路由
-        { path: '/publish', component: () => import('@/views/publish') }
+        { path: '/publish', component: () => import('@/views/publish') },
+        // 发布文章路由
+        { path: '/article/list', component: () => import('@/views/article/list') }
       ]
     }
-  ]
+  ],
+  // 滚动行为
+  scrollBehavior (to, from, savedPosition) {
+    return { x: 0, y: 0 }
+  }
 })
 /* 全局全局前置守卫
  每个守卫方法接收三个参数：
