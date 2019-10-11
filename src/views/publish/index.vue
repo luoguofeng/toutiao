@@ -1,10 +1,10 @@
 <template>
-  <div class="home-wrap">home</div>
+    <div>publish</div>
 </template>
 
 <script>
 export default {
-  name: 'home',
+  name: 'publish',
   data () {
     return {
 
@@ -14,4 +14,5 @@ export default {
 </script>
 
 <style scoped lang="less">
+
 </style>

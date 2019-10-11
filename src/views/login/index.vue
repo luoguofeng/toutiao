@@ -102,6 +102,7 @@ export default {
         // res 中有一个属性叫做 data, 在 data 中有两个属性后面我们会用上： token , refresh_token
         // 只要进入到这个方法中说明登录成功
         console.log(res)
+        localStorage.setItem('userInfo', JSON.stringify(res.data.data))
         this.$message({
           message: '登录成功',
           type: 'success'
