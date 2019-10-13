@@ -1,7 +1,20 @@
 import axios from 'axios'
 import service from './api'
 import { Message } from 'element-ui'
-
+// 将过大的数据转换
+import JSONbig from 'json-bigint'
+// 对服务器响应给 axios 的数据进行 bigint 的处理
+axios.defaults.transformResponse = [
+  function (data) {
+    try {
+      // 这个 data 就是纯粹的服务器响应给 axios 的数据
+      // 在 return 之前要进行转换
+      return JSONbig.parse(data) // 报错的原因：因为删除数据后，接口返回的数据为空，无法进行 JSONBig 的转换
+    } catch (err) {
+      return data
+    }
+  }
+]
 // service 循环遍历输出不同的请求方法
 let instance = axios.create({
   baseURL: 'http://ttapi.research.itcast.cn',
@@ -40,6 +53,12 @@ for (let key in service) {
       } catch (error) {
         response = error
       }
+    } else if (api.method === 'delete') {
+      try {
+        response = await instance[api.method](`${api.url}/${params}`, config)
+      } catch (error) {
+        response = error
+      }
     }
     return response // 返回响应值
   }
@@ -48,7 +67,7 @@ for (let key in service) {
 // 拦截器的添加
 instance.interceptors.request.use(
   config => {
-    // 发起请求前做些什么
+    // 发起请求前做些什么,判断用户是否登录,如果登录了,就在每次发送请求前加token
     let userInfo = JSON.parse(localStorage.getItem('userInfo'))
     if (userInfo) {
       config.headers.Authorization = `Bearer ${userInfo.token}`

@@ -8,6 +8,16 @@ const API = {
   getArticles: {
     method: 'get',
     url: 'mp/v1_0/articles'
+  },
+  // 删除文章
+  delArticle: {
+    method: 'delete',
+    url: 'mp/v1_0/articles'
+  },
+  // 获取文章频道
+  getChannels: {
+    method: 'get',
+    url: 'mp/v1_0/channels'
   }
 }
 export default API

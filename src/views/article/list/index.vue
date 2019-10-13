@@ -8,30 +8,37 @@
       <!-- form表单区域 -->
       <el-form ref="form" :model="form" label-width="80px">
         <el-form-item label="文章状态">
-          <el-radio-group v-model="form.resource">
-            <el-radio label="全部"></el-radio>
-            <el-radio label="草稿"></el-radio>
-            <el-radio label="待审核"></el-radio>
-            <el-radio label="审核通过"></el-radio>
-            <el-radio label="审核失败"></el-radio>
-          </el-radio-group>
+          <el-radio v-model="status" label>全部</el-radio>
+          <el-radio v-model="status" label="0">草稿</el-radio>
+          <el-radio v-model="status" label="1">待审核</el-radio>
+          <el-radio v-model="status" label="2">审核通过</el-radio>
+          <el-radio v-model="status" label="3">审核失败</el-radio>
         </el-form-item>
         <el-form-item label="频道列表">
-          <el-select v-model="form.region" placeholder="请选择活动区域">
-            <el-option label="区域一" value="shanghai"></el-option>
-            <el-option label="区域二" value="beijing"></el-option>
+          <el-select v-model="form.channel_id" placeholder="请选择频道">
+            <el-option label="所有频道" value></el-option>
+            <el-option v-for="item in channels" :key="item.id" :label="item.name" :value="item.id"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="时间选择">
           <el-date-picker
-            v-model="value1"
+            v-model="dateTime"
             type="daterange"
             range-separator="至"
             start-placeholder="开始日期"
             end-placeholder="结束日期"
+            value-format="yyyy-MM-dd"
           ></el-date-picker>
         </el-form-item>
       </el-form>
+      <el-button
+        class="searchBtn"
+        type="primary"
+        round
+        @click="searchArtcles"
+        :loading="loading"
+        :disabled="disabled"
+      >搜索</el-button>
     </el-card>
     <!-- 文章显示区域 -->
     <el-card class="box-card mycard">
@@ -39,7 +46,13 @@
         <span>共找到{{totalCount}}条符合条件的内容</span>
       </div>
       <!-- 表格区域 -->
-      <el-table :data="articels" :stripe="true" :border="true" style="width: 100%">
+      <el-table
+        :data="articels"
+        :stripe="true"
+        :border="true"
+        style="width: 100%"
+        v-loading.body="loading"
+      >
         <el-table-column label="图片" align="center" width="180">
           <!-- 表单将来当前行不是显示 prop 属性对应的数据，而是显示 tempalte 中的内容 -->
           <!-- 给 template 设置属性： slot-scope -->
@@ -61,18 +74,26 @@
         </el-table-column>
         <el-table-column align="center" prop="pubdate" label="发布日期" width="180"></el-table-column>
         <el-table-column align="center" label="操作">
-          <template>
+          <template slot-scope="scope">
             <el-button size="mini" round>
               <i class="el-icon-edit"></i>修改
             </el-button>
-            <el-button size="mini" round>
+            <el-button size="mini" round @click="delArticle(scope.row.id)">
               <i class="el-icon-delete"></i>删除
             </el-button>
           </template>
         </el-table-column>
       </el-table>
       <!-- 分页区域 -->
-      <el-pagination background layout="prev, pager, next" :total="1000"></el-pagination>
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="totalCount"
+        @current-change="pageChange"
+        @prev-click="pervClick"
+        @next-click="nextClick"
+        :disabled="disabled"
+      ></el-pagination>
     </el-card>
   </div>
 </template>
@@ -82,24 +103,118 @@ export default {
   data () {
     return {
       form: {
-        region: '',
+        // 频道id，不传为全部
+        channel_id: '',
         resource: ''
       },
-      value1: '',
+      // 起始&结束时间
+      dateTime: [],
+      // 加载动画
+      loading: false,
+      // 是否禁用分页
+      disabled: false,
       // 文章列表
       articels: [],
       // 文章总条数
-      totalCount: 0
+      totalCount: 0,
+      // 当前页
+      page: 1,
+      // 页容量,每页数量,介于10-50之间
+      per_page: 10,
+      // 文章状态,不传为全部
+      status: '',
+      // 起始时间
+      begin_pubdate: '',
+      // 截止时间
+      end_pubdate: '',
+      // 文章频道列表
+      channels: []
     }
   },
   created () {
-    this.getData()
+    this.getArticles()
+    this.getChannels()
   },
   methods: {
-    async getData () {
-      let res = await this.$Http.getArticles()
+    // 获取文章列表
+    async getArticles () {
+      this.loading = this.disabled = true
+      let res = await this.$Http.getArticles({
+        page: this.page,
+        per_page: this.per_page
+        // status: this.status
+        // channel_id: this.channel_id
+        // begin_pubdate: this.begin_pubdate,
+        // end_pubdate: this.end_pubdate
+      })
       this.articels = res.results
       this.totalCount = res.total_count
+      this.loading = this.disabled = false
+    },
+    // 获取频道列表
+    async getChannels () {
+      let res = await this.$Http.getChannels()
+      this.channels = res.channels
+    },
+    // 搜索文章列表
+    async searchArtcles () {
+      this.loading = this.disabled = true
+      let paramsObj = {}
+      // 判断搜索条件是否存在
+      if (this.status) {
+        paramsObj.status = this.status
+      }
+      if (this.form.channel_id) {
+        paramsObj.channel_id = this.form.channel_id
+      }
+      if (this.dateTime) {
+        paramsObj.begin_pubdate = this.dateTime[0]
+        paramsObj.end_pubdate = this.dateTime[1]
+      }
+      let res = await this.$Http.getArticles({
+        page: this.page,
+        per_page: this.per_page,
+        ...paramsObj
+      })
+      this.articels = res.results
+      this.totalCount = res.total_count
+      this.loading = this.disabled = false
+    },
+    // 上一页
+    pervClick () {
+      this.page--
+      this.getArticles()
+    },
+    // 下一页
+    nextClick () {
+      this.page++
+      this.getArticles()
+    },
+    // 点击页面
+    pageChange (currentPage) {
+      this.page = currentPage
+      this.getArticles()
+    },
+    // 删除文章
+    async delArticle (id) {
+      try {
+        await this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        })
+        await this.$Http.delArticle(id)
+        this.$message({
+          type: 'success',
+          message: '删除成功!'
+        })
+        this.getArticles()
+      } catch (err) {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      }
     }
   }
 }
@@ -112,5 +227,8 @@ export default {
 .myimg {
   width: 150px;
   height: 100px;
+}
+.searchBtn {
+  width: 100%;
 }
 </style>

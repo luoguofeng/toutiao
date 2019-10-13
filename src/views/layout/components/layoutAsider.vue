@@ -42,9 +42,7 @@
         </el-menu-item-group>
       </el-submenu>
       <el-menu-item index="4">
-        <template slot="title">
-          <span>账户信息</span>
-        </template>
+        <span slot="title">账户信息</span>
       </el-menu-item>
     </el-menu>
   </div>
