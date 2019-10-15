@@ -25,7 +25,7 @@ export default {
   methods: {
     // 获取频道列表
     async getChannels () {
-      let res = await this.$Http.getChannels({})
+      let res = await this.$Http.getChannels()
       this.channels = res.channels
     },
     // value：改变后的 options 对应的 value

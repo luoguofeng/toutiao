@@ -41,7 +41,7 @@
     <!-- 文章显示区域 -->
     <el-card class="box-card mycard">
       <div slot="header" class="clearfix">
-        <span>共找到{{totalCount}}条符合条件的内容</span>
+        <span>共找到{{total_count}}条符合条件的内容</span>
       </div>
       <!-- 表格区域 -->
       <el-table
@@ -86,7 +86,7 @@
       <el-pagination
         background
         layout="prev, pager, next"
-        :total="totalCount"
+        :total="total_count"
         @current-change="pageChange"
         @prev-click="pervClick"
         @next-click="nextClick"
@@ -113,7 +113,7 @@ export default {
       // 文章列表
       articels: [],
       // 文章总条数
-      totalCount: 0,
+      total_count: 0,
       // 当前页
       page: 1,
       // 页容量,每页数量,介于10-50之间
@@ -142,7 +142,7 @@ export default {
         }
       })
       this.articels = res.results
-      this.totalCount = res.total_count
+      this.total_count = res.total_count
       this.loading = this.disabled = false
     },
     // 获取子组件的选择的频道
@@ -171,7 +171,7 @@ export default {
         }
       })
       this.articels = res.results
-      this.totalCount = res.total_count
+      this.total_count = res.total_count
       this.loading = this.disabled = false
     },
     // 上一页
@@ -202,8 +202,8 @@ export default {
         this.searchArtcles()
       } catch (err) {
         this.$message({
-          type: 'info',
-          message: '已取消删除'
+          message: '用户信息修改成功',
+          type: 'success'
         })
       }
     },

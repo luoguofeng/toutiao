@@ -29,10 +29,11 @@ for (let key in service) {
   // data body请求体中的参数
   // target 动态参数
   // config 配置参数
-  Http[key] = async function ({ params, data, target, config = {} }) {
+  Http[key] = async function ({ params, data, target, config = {} } = {}) {
     // 是否有target参数
+    let currenUrl = '' // 请求的路径
     if (target) {
-      var currenUrl = `${api.url}/${target}`
+      currenUrl = `${api.url}/${target}`
     }
     // 是否有params参数
     if (params) {
@@ -43,8 +44,8 @@ for (let key in service) {
       config.data = data
     }
     let response = {} // 请求的返回值
-    config.method = api.method
-    config.url = currenUrl || api.url
+    config.method = api.method // 请求的方式
+    config.url = currenUrl || api.url // 请求的路径
     try {
       response = await instance(config)
     } catch (error) {
@@ -67,7 +68,7 @@ instance.interceptors.request.use(
   () => {
     // 请求错误
     Message({
-      message: '请求错误,请稍后重试', // 消息文字
+      message: '请求失败,请稍后重试', // 消息文字
       center: true, // 文字是否居中
       duration: 3000, // 显示时间, 毫秒。设为 0 则不会自动关闭
       type: 'error' // 主题
@@ -84,7 +85,7 @@ instance.interceptors.response.use(
   () => {
     Message.close()
     Message({
-      message: '请求错误,请稍后重试', // 消息文字
+      message: '请求失败,请稍后重试', // 消息文字
       center: true, // 文字是否居中
       duration: 3000, // 显示时间, 毫秒。设为 0 则不会自动关闭
       type: 'error' // 主题
@@ -95,12 +96,11 @@ instance.interceptors.response.use(
 export default Http
 
 /* // content-type是否是form-data的判断
-if (params && isFormData) {
+if (isFormData) {
   newParams = new FormData()
-  for (let i in params) {
-    newParams.append(i, params[i])
+  for (let i in data) {
+    newParams.append(i, data[i])
   }
 } else {
   newParams = params
-}
-不同请求的判断  */
+} */

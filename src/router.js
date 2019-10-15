@@ -40,7 +40,13 @@ let router = new Router({
         // 发布文章路由
         { path: '/article/list', component: () => import('@/views/article/list') },
         // 编辑文章路由
-        { path: '/article/edit/:id', component: () => import('@/views/article/publish') }
+        { path: '/article/edit/:id', component: () => import('@/views/article/publish') },
+        // 评论列表路由
+        { path: '/article/comment', component: () => import('@/views/article/comment') },
+        // 素材管理路由
+        { path: '/article/material', component: () => import('@/views/article/material') },
+        // 账户信息路由
+        { path: '/userInfo', component: () => import('@/views/userInfo') }
       ]
     }
   ],
