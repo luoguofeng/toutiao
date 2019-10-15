@@ -34,11 +34,7 @@
           class="avatar-uploader"
           action="http://ttapi.research.itcast.cn/mp/v1_0/user/photo"
           :show-file-list="false"
-          :on-preview="previewFile"
-          :on-success="handleAvatarSuccess"
-          :before-upload="beforeAvatarUpload"
           :http-request="editUserPhoto"
-          name="file"
         >
           <img v-if="userInfo.photo" :src="userInfo.photo" class="avatar" />
           <i v-else class="el-icon-plus avatar-uploader-icon"></i>
@@ -72,9 +68,7 @@ export default {
       // 加载状态
       loading: false,
       // 禁用状态
-      disabled: false,
-      // 上传文件
-      file: ''
+      disabled: false
     }
   },
   created () {
@@ -88,18 +82,6 @@ export default {
       this.userInfo = { ...this.userInfo, ...res }
       this.loading = false
     },
-    // 点击文件列表中已上传的文件时的钩子
-    previewFile (file) {
-      this.file = file
-      console.log(file)
-    },
-    // 上传图片前执行的函数
-    beforeAvatarUpload (file) {
-      this.file = file
-      console.log(file)
-    },
-    // 上传图片后执行的函数
-    handleAvatarSuccess () {},
     // 编辑用户资料的方法
     async editUserInfo () {
       this.loading = true
@@ -115,19 +97,19 @@ export default {
       this.getUserInfo()
     },
     // 编辑用户头像的方法
-    async editUserPhoto () {
-      const photo = new FormData()
-      for (let i in this.file) {
-        photo.append(i, this.file[i])
-      }
+    async editUserPhoto (data) {
+      console.log(data)
+      const fd = new FormData()
+      fd.append('photo', data.file)
       await this.$Http.editUserPhoto({
-        data: { photo: this.file },
-        config: {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          }
-        }
+        data: fd
       })
+      // 提示用户编辑成功
+      this.$message({
+        message: '修改成功',
+        type: 'success'
+      })
+      this.getUserInfo()
     }
   }
 }
