@@ -21,44 +21,34 @@ let instance = axios.create({
   timeout: 1000
 })
 const Http = {} // 包裹请求方法的容器
+
 for (let key in service) {
   let api = service[key] // url method
   // async 作用:避免进入回调地狱
-  // params 请求参数get:url,put,post,patch,delete:url
-  // isFormData 标志是否是form-data请求
+  // params 请query中的求参数
+  // data body请求体中的参数
+  // target 动态参数
   // config 配置参数
-  Http[key] = async function (params, isFormData = false, config = {}) {
-    let newParams = {}
-    // content-type是否是form-data的判断
-    if (params && isFormData) {
-      newParams = new FormData()
-      for (let i in params) {
-        newParams.append(i, params[i])
-      }
-    } else {
-      newParams = params
+  Http[key] = async function ({ params, data, target, config = {} }) {
+    // 是否有target参数
+    if (target) {
+      var currenUrl = `${api.url}/${target}`
     }
-    // 不同请求的判断
+    // 是否有params参数
+    if (params) {
+      config.params = params
+    }
+    // 是否有data参数
+    if (data) {
+      config.data = data
+    }
     let response = {} // 请求的返回值
-    if (api.method === 'post') {
-      try {
-        response = await instance[api.method](api.url, newParams, config)
-      } catch (error) {
-        response = error
-      }
-    } else if (api.method === 'get') {
-      config.params = newParams
-      try {
-        response = await instance[api.method](api.url, config)
-      } catch (error) {
-        response = error
-      }
-    } else if (api.method === 'delete') {
-      try {
-        response = await instance[api.method](`${api.url}/${params}`, config)
-      } catch (error) {
-        response = error
-      }
+    config.method = api.method
+    config.url = currenUrl || api.url
+    try {
+      response = await instance(config)
+    } catch (error) {
+      response = error
     }
     return response // 返回响应值
   }
@@ -103,3 +93,14 @@ instance.interceptors.response.use(
 )
 
 export default Http
+
+/* // content-type是否是form-data的判断
+if (params && isFormData) {
+  newParams = new FormData()
+  for (let i in params) {
+    newParams.append(i, params[i])
+  }
+} else {
+  newParams = params
+}
+不同请求的判断  */

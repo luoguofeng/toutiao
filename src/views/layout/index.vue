@@ -24,6 +24,7 @@ import LayoutHeader from '@/views/layout/components/layoutHeader'
 import LayoutAsider from '@/views/layout/components/layoutAsider'
 
 export default {
+  name: 'Layout',
   components: {
     LayoutHeader,
     LayoutAsider

@@ -6,7 +6,7 @@
         <span>全部图文</span>
       </div>
       <!-- form表单区域 -->
-      <el-form ref="form" :model="form" label-width="80px">
+      <el-form ref="form" label-width="80px">
         <el-form-item label="文章状态">
           <el-radio v-model="status" label>全部</el-radio>
           <el-radio v-model="status" label="0">草稿</el-radio>
@@ -15,10 +15,8 @@
           <el-radio v-model="status" label="3">审核失败</el-radio>
         </el-form-item>
         <el-form-item label="频道列表">
-          <el-select v-model="form.channel_id" placeholder="请选择频道">
-            <el-option label="所有频道" value></el-option>
-            <el-option v-for="item in channels" :key="item.id" :label="item.name" :value="item.id"></el-option>
-          </el-select>
+          <!-- 频道列表组件 -->
+          <channels @channel_idChange="getchannel_id"></channels>
         </el-form-item>
         <el-form-item label="时间选择">
           <el-date-picker
@@ -51,7 +49,7 @@
         :stripe="true"
         :border="true"
         style="width: 100%"
-        v-loading.body="loading"
+        v-loading="loading"
       >
         <el-table-column label="图片" align="center" width="180">
           <!-- 表单将来当前行不是显示 prop 属性对应的数据，而是显示 tempalte 中的内容 -->
@@ -75,7 +73,7 @@
         <el-table-column align="center" prop="pubdate" label="发布日期" width="180"></el-table-column>
         <el-table-column align="center" label="操作">
           <template slot-scope="scope">
-            <el-button size="mini" round>
+            <el-button size="mini" round @click="editArticle(scope.row.id)">
               <i class="el-icon-edit"></i>修改
             </el-button>
             <el-button size="mini" round @click="delArticle(scope.row.id)">
@@ -99,14 +97,13 @@
 </template>
 
 <script>
+import channels from '@/components/channels'
 export default {
+  name: 'ArticleList',
   data () {
     return {
-      form: {
-        // 频道id，不传为全部
-        channel_id: '',
-        resource: ''
-      },
+      // 频道id，不传为全部
+      channel_id: '',
       // 起始&结束时间
       dateTime: [],
       // 加载动画
@@ -127,36 +124,32 @@ export default {
       begin_pubdate: '',
       // 截止时间
       end_pubdate: '',
-      // 文章频道列表
-      channels: []
+      // 频道列表
+      channels: ''
     }
   },
   created () {
     this.getArticles()
-    this.getChannels()
   },
   methods: {
     // 获取文章列表
     async getArticles () {
       this.loading = this.disabled = true
       let res = await this.$Http.getArticles({
-        page: this.page,
-        per_page: this.per_page
-        // status: this.status
-        // channel_id: this.channel_id
-        // begin_pubdate: this.begin_pubdate,
-        // end_pubdate: this.end_pubdate
+        params: {
+          page: this.page,
+          per_page: this.per_page
+        }
       })
       this.articels = res.results
       this.totalCount = res.total_count
       this.loading = this.disabled = false
     },
-    // 获取频道列表
-    async getChannels () {
-      let res = await this.$Http.getChannels()
-      this.channels = res.channels
+    // 获取子组件的选择的频道
+    getchannel_id (value) {
+      this.channel_id = value
     },
-    // 搜索文章列表
+    // 搜索文章
     async searchArtcles () {
       this.loading = this.disabled = true
       let paramsObj = {}
@@ -164,17 +157,18 @@ export default {
       if (this.status) {
         paramsObj.status = this.status
       }
-      if (this.form.channel_id) {
-        paramsObj.channel_id = this.form.channel_id
+      if (this.channel_id) {
+        paramsObj.channel_id = this.channel_id
       }
       if (this.dateTime) {
-        paramsObj.begin_pubdate = this.dateTime[0]
-        paramsObj.end_pubdate = this.dateTime[1]
+        [paramsObj.begin_pubdate, paramsObj.end_pubdate] = this.dateTime
       }
       let res = await this.$Http.getArticles({
-        page: this.page,
-        per_page: this.per_page,
-        ...paramsObj
+        params: {
+          page: this.page,
+          per_page: this.per_page,
+          ...paramsObj
+        }
       })
       this.articels = res.results
       this.totalCount = res.total_count
@@ -183,39 +177,43 @@ export default {
     // 上一页
     pervClick () {
       this.page--
-      this.getArticles()
+      this.searchArtcles()
     },
     // 下一页
     nextClick () {
       this.page++
-      this.getArticles()
+      this.searchArtcles()
     },
     // 点击页面
     pageChange (currentPage) {
       this.page = currentPage
-      this.getArticles()
+      this.searchArtcles()
     },
     // 删除文章
-    async delArticle (id) {
+    async delArticle (target) {
       try {
         await this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         })
-        await this.$Http.delArticle(id)
-        this.$message({
-          type: 'success',
-          message: '删除成功!'
-        })
-        this.getArticles()
+        await this.$Http.delArticle({ target })
+        this.$message({ type: 'success', message: '删除成功!' })
+        this.searchArtcles()
       } catch (err) {
         this.$message({
           type: 'info',
           message: '已取消删除'
         })
       }
+    },
+    // 编辑文章
+    editArticle (id) {
+      this.$router.push(`/article/edit/${id}`)
     }
+  },
+  components: {
+    channels
   }
 }
 </script>
@@ -229,6 +227,6 @@ export default {
   height: 100px;
 }
 .searchBtn {
-  width: 100%;
+  width: 50%;
 }
 </style>

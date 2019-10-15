@@ -8,6 +8,16 @@ import ElementUI from 'element-ui'
 
 import 'element-ui/lib/theme-chalk/index.css'
 import '@/assets/styles/base.css'
+
+// 富文本编辑器
+import VueQuillEditor from 'vue-quill-editor'
+
+// require styles
+import 'quill/dist/quill.core.css'
+import 'quill/dist/quill.snow.css'
+import 'quill/dist/quill.bubble.css'
+
+Vue.use(VueQuillEditor /* { default global options } */)
 // 把Http挂载到Vue实例身上
 Vue.prototype.$Http = Http
 

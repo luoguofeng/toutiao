@@ -18,6 +18,21 @@ const API = {
   getChannels: {
     method: 'get',
     url: 'mp/v1_0/channels'
+  },
+  // 发表文章
+  pubArticle: {
+    method: 'post',
+    url: 'mp/v1_0/articles'
+  },
+  // 编辑文章
+  editArticle: {
+    method: 'put',
+    url: 'mp/v1_0/articles'
+  },
+  // 获取指定文章
+  getArticleById: {
+    method: 'get',
+    url: 'mp/v1_0/articles'
   }
 }
 export default API

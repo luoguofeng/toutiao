@@ -45,6 +45,7 @@
 
 <script>
 export default {
+  name: 'login',
   data () {
     return {
       // 表单的参数
@@ -96,10 +97,9 @@ export default {
       // 将加载状态设置为 true
       this.loginloading = true
       // 发送请求到服务器
-      let res = await this.$Http.postLogin(this.form)
+      let res = await this.$Http.postLogin({ data: this.form })
       // res 中有一个属性叫做 data, 在 data 中有两个属性后面我们会用上： token , refresh_token
       // 只要进入到这个方法中说明登录成功
-      console.log(res)
       localStorage.setItem('userInfo', JSON.stringify(res))
       this.$message({
         message: '登录成功',

@@ -36,9 +36,11 @@ let router = new Router({
         // 主页路由
         { path: '/home', component: () => import('@/views/home') },
         // 发布文章路由
-        { path: '/publish', component: () => import('@/views/publish') },
+        { path: '/article/publish', component: () => import('@/views/article/publish') },
         // 发布文章路由
-        { path: '/article/list', component: () => import('@/views/article/list') }
+        { path: '/article/list', component: () => import('@/views/article/list') },
+        // 编辑文章路由
+        { path: '/article/edit/:id', component: () => import('@/views/article/publish') }
       ]
     }
   ],

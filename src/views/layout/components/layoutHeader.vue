@@ -22,6 +22,7 @@
 
 <script>
 export default {
+  name: 'layoutHeader',
   data () {
     return {
       // 用户信息

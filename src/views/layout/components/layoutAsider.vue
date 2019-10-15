@@ -24,7 +24,7 @@
           <span>内容管理</span>
         </template>
         <el-menu-item-group>
-          <el-menu-item index="/publish">发布文章</el-menu-item>
+          <el-menu-item index="/article/publish">发布文章</el-menu-item>
           <el-menu-item index="/article/list">内容列表</el-menu-item>
           <el-menu-item index="2-3">评论列表</el-menu-item>
           <el-menu-item index="2-4">素材管理</el-menu-item>
@@ -50,14 +50,7 @@
 
 <script>
 export default {
-  methods: {
-    //   handleOpen () {
-    //       console.log('哎呀!我被打开了')
-    //   },
-    //   handleClose () {
-    //       console.log('哎呀!我被关闭了')
-    //   }
-  }
+  name: 'layoutAsider'
 }
 </script>
 
@@ -72,15 +65,18 @@ export default {
     width: 120px;
   }
 }
+.appasider {
+    min-width: 200px;
+}
 .is-active {
-    background-color: #409eff!important;
-    color: #fff!important;
+  background-color: #409eff !important;
+  color: #fff !important;
 }
 .el-menu-item {
-    min-width: 200px!important;
-    padding-left: 30px!important;
+  min-width: 200px !important;
+  padding-left: 30px !important;
 }
 .el-submenu {
-    min-width: 200px!important;
-  }
+  min-width: 200px !important;
+}
 </style>
