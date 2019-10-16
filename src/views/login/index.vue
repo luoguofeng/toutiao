@@ -44,6 +44,7 @@
 </template>
 
 <script>
+import { mapMutations } from 'vuex'
 export default {
   name: 'login',
   data () {
@@ -77,6 +78,8 @@ export default {
     }
   },
   methods: {
+    // 映射vuex中mutation中的方法
+    ...mapMutations(['updateUserInfo']),
     // 用户登录
     login () {
       // 得到 el-form 元素
@@ -100,7 +103,7 @@ export default {
       let res = await this.$Http.postLogin({ data: this.form })
       // res 中有一个属性叫做 data, 在 data 中有两个属性后面我们会用上： token , refresh_token
       // 只要进入到这个方法中说明登录成功
-      localStorage.setItem('userInfo', JSON.stringify(res))
+      this.updateUserInfo(res)
       this.$message({
         message: '登录成功',
         type: 'success'

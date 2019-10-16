@@ -4,7 +4,7 @@ import Router from 'vue-router'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css' // ease：调整动画设置，ease可传递CSS3缓冲动画字符串（如ease、linear、ease-in）。speed为动画速度（单位ms）。
 import { Message } from 'element-ui'
-NProgress.configure({ ease: 'ease', speed: 800 })
+// NProgress.configure({ ease: 'ease', speed: 800 })
 
 // 解决在使用ElementUi时点击同一个路由，页面报错
 const originalPush = Router.prototype.push

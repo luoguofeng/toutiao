@@ -113,7 +113,7 @@ export default {
     }
   },
   methods: {
-    // 得到素材
+    // 得到素材的方法
     // collect: true 收藏的数据 false 全部的数据
     async getMaterials (collect) {
       let res = await this.$Http.getMaterials({
